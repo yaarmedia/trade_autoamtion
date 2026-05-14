@@ -1,0 +1,4 @@
+node_modules/
+executed_trades.json
+*.log
+.env
