@@ -1,0 +1,27 @@
+{
+  "permissions": {
+    "allow": [
+      "PowerShell(schtasks /query *)",
+      "PowerShell(schtasks /create *)",
+      "PowerShell(schtasks /delete *)",
+      "PowerShell(npm init *)",
+      "PowerShell(npm install*)",
+      "PowerShell(npm run *)",
+      "PowerShell(node *)",
+      "PowerShell(git init*)",
+      "PowerShell(git add *)",
+      "PowerShell(git commit *)",
+      "PowerShell(git push *)",
+      "PowerShell(git remote *)",
+      "PowerShell(git branch *)",
+      "PowerShell(git config *)",
+      "Bash(npm install*)",
+      "Bash(npm run *)",
+      "Bash(node *)",
+      "Bash(curl *paper-api.alpaca.markets*)",
+      "Bash(curl *data.alpaca.markets*)",
+      "Bash(curl *capitoltrades.com*)"
+    ],
+    "deny": []
+  }
+}
