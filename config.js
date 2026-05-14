@@ -1,8 +1,8 @@
 // Alpaca paper trading credentials
 const ALPACA = {
   endpoint: 'https://paper-api.alpaca.markets/v2',
-  key: 'PKMUHZB4FEQ5DBF5FXXMP6ITKU',
-  secret: 'B8bPFpPvxNVE1g1vUnuynKpWTTcnQWvcj6c7Vs8rqW3Z',
+  key: 'PKVJNEAQHM6EQRIKF5SRYE44CD',
+  secret: 'FAoLevozG6ypPx5XmRCGACabYroHpgM7w43G6bBLkbCc',
 };
 
 // Politicians to follow (Capitol Trades profile IDs)
