@@ -62,9 +62,10 @@ async function runWheel() {
 
   const open = await isMarketOpen().catch(() => false);
   if (!open) {
-    log('Market closed — skipping execution (options orders require open market)');
+    log('Market is closed — skipping. Will try again next run.');
     return;
   }
+  log('Market is open — proceeding');
 
   const account   = await getAccount();
   const positions = await getPositions();

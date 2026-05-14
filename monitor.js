@@ -76,8 +76,10 @@ async function runCheck() {
 
   const open = await isMarketOpen().catch(() => false);
   if (!open) {
-    log('Market is closed — orders will be queued as day orders for next open');
+    log('Market is closed — skipping. Will try again next run.');
+    return;
   }
+  log('Market is open — proceeding');
 
   const account = await getAccount().catch(() => null);
   if (!account) { log('ERROR: Could not fetch account'); return; }
