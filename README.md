@@ -1,88 +1,78 @@
-# Congressional Trade Monitor
+# Automated Trading System
 
-Automatically mirrors stock trades filed by top-performing US politicians on your Alpaca paper trading account. Scrapes [Capitol Trades](https://www.capitoltrades.com) for new filings and places matching market orders in real time.
-
----
-
-## How It Works
-
-1. Fetches the latest disclosed trades from Capitol Trades for tracked politicians
-2. Compares against a local log of already-executed trades to avoid duplicates
-3. Validates each trade against Alpaca (asset must be active and tradable)
-4. Checks buying power before buys, checks holdings before sells (no naked shorting)
-5. Places a market order on Alpaca paper trading to mirror the trade
-6. Logs the result to `executed_trades.json`
+Two live automated strategies running on Alpaca paper trading accounts, monitored via Claude Code remote routines. Built to compare performance between a data-driven mirroring strategy and an options income strategy.
 
 ---
 
-## Who We Copy and Why
+## Live Strategies
 
-Congressional trading mirroring is a real and widely used strategy — there are even ETFs built around it (e.g. NANC tracks Pelosi's trades). The core idea: politicians on key committees receive classified briefings, early regulatory signals, and insider knowledge about legislation that can move markets. Studies have shown congressional portfolios significantly outperform the S&P 500 on average.
+| Strategy | Account | Status | Schedule |
+|----------|---------|--------|---------|
+| [Congressional Trade Mirror](#strategy-1-congressional-trade-mirror) | `PKVJNEAQHM6...` | ✅ Live | Every 30 min / hourly |
+| [TSLA Wheel Strategy](#strategy-2-tsla-wheel-strategy) | `PKCKKR7H2...` | ✅ Live | Hourly |
 
-We selected the four highest-volume, most consistent traders on Capitol Trades:
-
----
-
-### Nancy Pelosi — $97.81M volume | 44 trades
-**Why we copy her:** Pelosi is widely considered the single best trader in Congress. Her portfolio is laser-focused on big tech — NVIDIA, Apple, Alphabet, Amazon — and her timing has been uncanny. She bought NVIDIA call options before major AI legislation and chip subsidies. She sits at the intersection of Silicon Valley fundraising and Washington policy, giving her an unmatched read on the tech sector. There is an entire ETF (ticker: NANC) that does nothing but mirror her trades.
-
-**What she trades:** NVDA, AAPL, GOOGL, AMZN, MSFT, PYPL, TEM
-
----
-
-### Dave McCormick — $63.33M volume | 278 trades
-**Why we copy him:** McCormick is the most *active* trader in Congress by trade count. A former hedge fund CEO (Bridgewater Associates), he brings a professional investor's discipline to his personal portfolio. His high frequency means more opportunities to mirror, and his Wall Street background suggests genuine skill rather than luck.
-
-**What he trades:** Broadly diversified — NVDA, GOOGL, AAPL, AMGN, MSFT, QCOM, V
+Both strategies:
+- Only execute when the US market is open (checks Alpaca `/clock` endpoint)
+- Skip weekends, holidays, and pre/after-market hours automatically
+- Run on separate $100,000 paper accounts for clean performance comparison
 
 ---
 
-### Suzan DelBene — $42.96M volume | 174 trades
-**Why we copy her:** DelBene sits on the House Ways and Means Committee, which controls tax policy, and is a former Microsoft executive. Her tech background and committee position give her deep insight into both corporate earnings trajectories and upcoming tax/regulatory changes that affect tech valuations.
+## Where to Monitor
 
-**What she trades:** Tech-heavy, consistent with her background
-
----
-
-### Mark Warner — $29.98M volume | 107 trades
-**Why we copy him:** Warner is Vice Chair of the Senate Intelligence Committee and a former venture capitalist who made his fortune in telecom. He has early visibility into national security decisions, foreign investment restrictions (CFIUS), and emerging tech regulation — all of which have major market implications.
-
-**What he trades:** WFC, MSFT, AAPL, IWD, HON, LNG — diversified with a financial/energy lean
-
----
-
-### The Edge
-The reason this strategy works is the **reporting delay loophole**. Politicians have up to **45 days** to report a trade. By the time it appears on Capitol Trades, the catalyst (a bill passing, a contract awarded, a regulatory decision) may already be public — but the stock often hasn't fully priced it in yet. Early movers still profit.
-
-> Politicians have up to **45 days** to report trades under the STOCK Act, so new filings appear periodically rather than in real time.
+| What | Where |
+|------|-------|
+| Routine run logs | https://claude.ai/code/routines |
+| Live positions & P&L | https://app.alpaca.markets (switch accounts) |
+| Order history | Alpaca dashboard → Orders tab |
+| Trade execution log | `executed_trades.json` (congressional) |
+| Wheel cycle log | `wheel/wheel_log.json` + `wheel/wheel.log` |
+| Source code | https://github.com/yaarmedia/trade_autoamtion |
 
 ---
 
-## Alpaca Account
+## Strategy 1: Congressional Trade Mirror
 
-- **Endpoint:** `https://paper-api.alpaca.markets/v2`
-- **Account type:** Paper trading (simulated money, $100,000 starting balance)
-- **Credentials:** Stored in `config.js`
+### How It Works
+1. Scrapes [Capitol Trades](https://www.capitoltrades.com) for new trade filings
+2. Compares against a local log of already-executed trades (no duplicates)
+3. Validates each ticker is active and tradable on Alpaca
+4. Checks buying power before buys, checks holdings before sells
+5. Places a market order to mirror the politician's trade
+6. Logs result to `executed_trades.json`
 
----
+### Who We Copy and Why
 
-## Project Structure
-
-```
-├── monitor.js          # Main runner — orchestrates checks and order placement
-├── scraper.js          # Fetches and parses trade data from Capitol Trades
-├── alpaca.js           # Alpaca REST API wrapper (orders, positions, account)
-├── tradeStore.js       # Persists executed trade IDs to avoid duplicates
-├── config.js           # Credentials, politician list, share sizing rules
-├── executed_trades.json # Auto-generated log of all placed orders
-└── package.json
-```
+Congressional trading mirroring is a real strategy — there are even ETFs built around it (NANC mirrors Pelosi's trades). The edge: politicians on key committees receive classified briefings, early regulatory signals, and insider knowledge about legislation that moves markets. Studies show congressional portfolios significantly outperform the S&P 500.
 
 ---
 
-## Share Sizing
+#### Nancy Pelosi — $97.81M | 44 trades
+**Why:** Widely considered the best trader in Congress. Laser-focused on big tech with uncanny timing — bought NVIDIA before major AI legislation and chip subsidies. Sits at the intersection of Silicon Valley fundraising and Washington policy. There is an entire ETF (NANC) that does nothing but mirror her.
 
-Trades are sized based on the dollar value reported by the politician:
+**Trades:** NVDA, AAPL, GOOGL, AMZN, MSFT, PYPL, TEM
+
+#### Dave McCormick — $63.33M | 278 trades
+**Why:** Most active trader in Congress by count. Former CEO of Bridgewater Associates (world's largest hedge fund) — brings professional discipline. High frequency = more mirroring opportunities.
+
+**Trades:** NVDA, GOOGL, AAPL, AMGN, MSFT, QCOM, V
+
+#### Suzan DelBene — $42.96M | 174 trades
+**Why:** Sits on House Ways and Means Committee (controls tax policy). Former Microsoft executive. Deep insight into both tech earnings and upcoming regulatory changes.
+
+**Trades:** Tech-heavy, consistent with her background
+
+#### Mark Warner — $29.98M | 107 trades
+**Why:** Vice Chair of Senate Intelligence Committee. Former VC who made his fortune in telecom. Early visibility into national security decisions, CFIUS rulings, and emerging tech regulation.
+
+**Trades:** WFC, MSFT, AAPL, IWD, HON, LNG
+
+---
+
+#### The Edge
+Politicians have up to **45 days** to report a trade under the STOCK Act. By the time it appears on Capitol Trades, the catalyst may be public — but the stock often hasn't fully priced it in yet.
+
+### Share Sizing
 
 | Reported Value | Shares Mirrored |
 |---------------|----------------|
@@ -91,59 +81,133 @@ Trades are sized based on the dollar value reported by the politician:
 | $100K – $999K | 3 shares |
 | $1M+ | 5 shares |
 
----
-
-## Running Locally
+### Running Locally
 
 ```bash
-# Install dependencies
 npm install
-
-# Run one check cycle (scrape + place any new orders)
-npm run once
-
-# View log of all executed trades
-npm run status
-
-# Run continuously (checks every 30 min via node-cron)
-npm start
+npm run once     # single check cycle
+npm run status   # view executed trade log
+npm start        # run continuously (every 30 min)
 ```
 
----
-
-## Automated Schedule
-
-The monitor runs automatically on two tracks:
-
-### 1. Windows Task Scheduler (local machine)
-- **Interval:** Every 30 minutes
-- **Hours:** Mon–Fri, 9:30am – 4:00pm ET
-- **Requirement:** PC must be on
-- Manage via Windows Task Scheduler → `CongressionalTradeMonitor`
-
-### 2. Claude Code Remote Routine (cloud)
-- **Interval:** Every 1 hour
-- **Hours:** Mon–Fri, 9:00am – 4:00pm ET
-- **Requirement:** None — runs in Anthropic's cloud even when PC is off
-- View and manage at: https://claude.ai/code/routines
+### Schedule
+- **Local:** Windows Task Scheduler → `CongressionalTradeMonitor` — every 30 min, Mon–Fri 9:30am–4pm ET
+- **Cloud:** [Claude Code Routine](https://claude.ai/code/routines/trig_01VcywzMXTBfaLEVMNx3pNbZ) — every hour, Mon–Fri
 
 ---
 
-## Trade Safety Rules
+## Strategy 2: TSLA Wheel Strategy
 
-- **No naked shorting:** Sells are only placed if the stock is already held in the portfolio
-- **Buying power check:** Buys are skipped if cash is insufficient
-- **No duplicates:** Each trade is identified by a unique transaction ID from Capitol Trades — never executed twice
-- **Asset validation:** Skips any ticker that is not active and tradable on Alpaca
+### How It Works
+
+The wheel is an options income strategy that generates consistent premium by cycling between two positions:
+
+**Phase 1 — Sell Cash-Secured Put (CSP)**
+- Sell an OTM put on TSLA at 0.20–0.28 delta, 30–50 DTE
+- Collect premium upfront
+- If it expires worthless → keep premium, repeat Phase 1
+- If TSLA drops below strike → get assigned 100 shares, move to Phase 2
+
+**Phase 2 — Sell Covered Call (CC)**
+- Now holding 100 shares of TSLA from assignment
+- Sell an OTM call above cost basis at 0.20–0.28 delta, 30–50 DTE
+- Collect premium upfront
+- If it expires worthless → keep premium, repeat Phase 2
+- If TSLA rises above strike → shares get called away, move back to Phase 1
+
+**Repeat indefinitely**, collecting premium every cycle.
+
+### Why TSLA
+TSLA has consistently high implied volatility (IV), which means fatter option premiums. Higher IV = more income collected per contract. The tradeoff is larger potential swings — managed by using lower delta strikes and avoiding earnings weeks.
+
+### Risk Management Rules
+- **Strike selection:** 0.20–0.28 delta (roughly 12–20% OTM) — conservative buffer
+- **Take profit:** Close position at 50% of max profit — locks in gains early, frees up capital
+- **Roll early:** Close and re-sell at 21 DTE — avoids gamma acceleration near expiry
+- **Call floor:** Covered call strike must be at or above cost basis — never sell shares at a loss
+- **No naked positions:** Puts are always cash-secured, calls are always covered
+
+### Files
+```
+wheel/
+├── run.js           # Entry point
+├── wheelEngine.js   # Full strategy logic (phase detection, strike selection, order management)
+├── alpaca.js        # Alpaca API wrapper for options
+├── config.js        # Credentials, delta targets, DTE window, take-profit rules
+├── wheel_log.json   # State file: current phase, open order, cycle history
+└── wheel.log        # Full timestamped text log of every action
+```
+
+### Running Locally
+```bash
+cd wheel
+npm install
+node run.js    # execute one cycle
+```
+
+### Schedule
+- **Local:** Windows Task Scheduler → `WheelStrategyTSLA` — every hour, Mon–Fri 9:35am–4pm ET
+- **Cloud:** [Claude Code Routine](https://claude.ai/code/routines/trig_01FH25fqCeCFovTPEr9kUUXh) — every hour, Mon–Fri
 
 ---
 
-## Data Source
+## Other Strategies (Potential Future Additions)
 
-Trade data is sourced from [Capitol Trades](https://www.capitoltrades.com), which aggregates congressional financial disclosures filed under the **STOCK Act (Stop Trading on Congressional Knowledge Act)**. All trades are public record.
+### Options Income
+| Strategy | Description |
+|----------|-------------|
+| **Iron Condor** | Sell OTM call spread + put spread simultaneously — profit if price stays in range |
+| **Earnings IV Crush** | Sell straddle before earnings, close after implied volatility collapses |
+| **Covered Strangle** | Sell OTM call + OTM put at same time — more premium than wheel |
+| **PMCC** | Buy deep ITM LEAP, sell short-term calls against it — less capital than covered calls |
+| **0DTE Scalping** | Buy/sell options expiring same day — high frequency, high risk |
+
+### Momentum / Trend
+| Strategy | Description |
+|----------|-------------|
+| **52-Week High Breakout** | Buy stocks making new highs with volume confirmation |
+| **RSI Mean Reversion** | Buy oversold stocks, sell overbought — works in choppy markets |
+| **MACD Crossover** | Buy when fast MA crosses above slow MA on trending stocks |
+| **Dual Momentum** | Rotate monthly between SPY, bonds, and cash based on relative strength |
+
+### Data-Driven / Edge
+| Strategy | Description |
+|----------|-------------|
+| **Insider Trading Mirror** | Mirror SEC Form 4 filings by corporate insiders — more frequent signals than congressional |
+| **Options Flow** | Follow unusual large-volume options activity to spot smart money moves early |
+| **Short Interest Squeeze** | Buy high-short-interest stocks with rising price momentum |
+| **VIX Spike Buyer** | Buy SPY when VIX spikes above 30 — contrarian crash buying |
+
+### ETF / Systematic
+| Strategy | Description |
+|----------|-------------|
+| **DCA on SPY/QQQ** | Buy fixed dollar amount weekly regardless of price |
+| **Sector Rotation** | Rotate between S&P sectors based on economic cycle phase |
+| **TQQQ/SQQQ Switch** | Hold TQQQ in uptrend, SQQQ in downtrend — leveraged ETF momentum |
+
+---
+
+## Project Structure
+
+```
+├── monitor.js           # Congressional trade monitor runner
+├── scraper.js           # Capitol Trades scraper
+├── alpaca.js            # Alpaca API wrapper (equities)
+├── tradeStore.js        # Executed trade deduplication store
+├── config.js            # Congressional strategy config + credentials
+├── executed_trades.json # Auto-generated congressional trade log
+├── package.json
+└── wheel/
+    ├── run.js           # Wheel strategy entry point
+    ├── wheelEngine.js   # Wheel strategy logic
+    ├── alpaca.js        # Alpaca API wrapper (options)
+    ├── config.js        # Wheel strategy config + credentials
+    ├── wheel_log.json   # Wheel state and cycle history
+    └── wheel.log        # Full timestamped execution log
+```
 
 ---
 
 ## Disclaimer
 
-This project uses a **paper trading account** — no real money is involved. This is for educational and research purposes only. Nothing here constitutes financial advice.
+This project uses **paper trading accounts** — no real money is involved. This is for educational and research purposes only. Nothing here constitutes financial advice.
