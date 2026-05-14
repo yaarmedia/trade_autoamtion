@@ -15,14 +15,44 @@ Automatically mirrors stock trades filed by top-performing US politicians on you
 
 ---
 
-## Politicians Tracked
+## Who We Copy and Why
 
-| Name | Party | 3-Year Volume | Notes |
-|------|-------|--------------|-------|
-| Nancy Pelosi | D | $97.81M | Heavily concentrated in big tech |
-| Dave McCormick | R | $63.33M | Most active trader (278 trades) |
-| Suzan DelBene | D | $42.96M | Tech-focused |
-| Mark Warner | D | $29.98M | Diversified portfolio |
+Congressional trading mirroring is a real and widely used strategy — there are even ETFs built around it (e.g. NANC tracks Pelosi's trades). The core idea: politicians on key committees receive classified briefings, early regulatory signals, and insider knowledge about legislation that can move markets. Studies have shown congressional portfolios significantly outperform the S&P 500 on average.
+
+We selected the four highest-volume, most consistent traders on Capitol Trades:
+
+---
+
+### Nancy Pelosi — $97.81M volume | 44 trades
+**Why we copy her:** Pelosi is widely considered the single best trader in Congress. Her portfolio is laser-focused on big tech — NVIDIA, Apple, Alphabet, Amazon — and her timing has been uncanny. She bought NVIDIA call options before major AI legislation and chip subsidies. She sits at the intersection of Silicon Valley fundraising and Washington policy, giving her an unmatched read on the tech sector. There is an entire ETF (ticker: NANC) that does nothing but mirror her trades.
+
+**What she trades:** NVDA, AAPL, GOOGL, AMZN, MSFT, PYPL, TEM
+
+---
+
+### Dave McCormick — $63.33M volume | 278 trades
+**Why we copy him:** McCormick is the most *active* trader in Congress by trade count. A former hedge fund CEO (Bridgewater Associates), he brings a professional investor's discipline to his personal portfolio. His high frequency means more opportunities to mirror, and his Wall Street background suggests genuine skill rather than luck.
+
+**What he trades:** Broadly diversified — NVDA, GOOGL, AAPL, AMGN, MSFT, QCOM, V
+
+---
+
+### Suzan DelBene — $42.96M volume | 174 trades
+**Why we copy her:** DelBene sits on the House Ways and Means Committee, which controls tax policy, and is a former Microsoft executive. Her tech background and committee position give her deep insight into both corporate earnings trajectories and upcoming tax/regulatory changes that affect tech valuations.
+
+**What she trades:** Tech-heavy, consistent with her background
+
+---
+
+### Mark Warner — $29.98M volume | 107 trades
+**Why we copy him:** Warner is Vice Chair of the Senate Intelligence Committee and a former venture capitalist who made his fortune in telecom. He has early visibility into national security decisions, foreign investment restrictions (CFIUS), and emerging tech regulation — all of which have major market implications.
+
+**What he trades:** WFC, MSFT, AAPL, IWD, HON, LNG — diversified with a financial/energy lean
+
+---
+
+### The Edge
+The reason this strategy works is the **reporting delay loophole**. Politicians have up to **45 days** to report a trade. By the time it appears on Capitol Trades, the catalyst (a bill passing, a contract awarded, a regulatory decision) may already be public — but the stock often hasn't fully priced it in yet. Early movers still profit.
 
 > Politicians have up to **45 days** to report trades under the STOCK Act, so new filings appear periodically rather than in real time.
 
