@@ -1,0 +1,13 @@
+{
+  "name": "wheel-strategy",
+  "version": "1.0.0",
+  "description": "Wheel strategy on TSLA using Alpaca paper trading",
+  "main": "run.js",
+  "scripts": {
+    "start": "node run.js",
+    "status": "node -e \"const fs=require('fs'); const d=JSON.parse(fs.readFileSync('wheel_log.json','utf8')); console.log(JSON.stringify(d,null,2))\" 2>/dev/null || echo 'No log yet'"
+  },
+  "dependencies": {
+    "axios": "^1.16.1"
+  }
+}
