@@ -1,6 +1,6 @@
 # Automated Trading System
 
-Two live automated strategies running on Alpaca paper trading accounts, monitored via Claude Code remote routines. Built to compare performance between a data-driven mirroring strategy and an options income strategy.
+Three live automated strategies running on Alpaca paper trading accounts, monitored via Claude Code remote routines. Built to compare performance across different market approaches.
 
 ---
 
@@ -10,8 +10,9 @@ Two live automated strategies running on Alpaca paper trading accounts, monitore
 |----------|---------|--------|---------|
 | [Congressional Trade Mirror](#strategy-1-congressional-trade-mirror) | `PKVJNEAQHM6...` | ✅ Live | Every 30 min / hourly |
 | [TSLA Wheel Strategy](#strategy-2-tsla-wheel-strategy) | `PKCKKR7H2...` | ✅ Live | Hourly |
+| [MACD/RSI Technical Strategy](#strategy-3-macdrsI-technical-strategy) | `PKENDOALUOVX...` | ✅ Live | Every 30 min / hourly |
 
-Both strategies:
+All strategies:
 - Only execute when the US market is open (checks Alpaca `/clock` endpoint)
 - Skip weekends, holidays, and pre/after-market hours automatically
 - Run on separate $100,000 paper accounts for clean performance comparison
@@ -151,6 +152,67 @@ node run.js    # execute one cycle
 
 ---
 
+## Strategy 3: MACD/RSI Technical Strategy
+
+### How It Works
+
+Uses two classic technical indicators to time entries and exits on liquid ETFs and mega-cap stocks:
+
+**MACD (Moving Average Convergence Divergence)**
+- Computes fast EMA (12-day) minus slow EMA (26-day) = MACD line
+- Computes 9-day EMA of the MACD line = signal line
+- A **bullish crossover** (MACD crosses above signal) is a buy signal
+- A **bearish crossover** (MACD crosses below signal) is a sell signal
+
+**RSI (Relative Strength Index, 14-day)**
+- Measures momentum on a 0–100 scale
+- Used as a **filter**, not the trigger — prevents buying overbought stocks
+- Buy only when RSI is between 30–55 (not in freefall, not overextended)
+- Sell confirmed when RSI > 65 (overbought)
+
+**Combined Rule:**
+- **BUY:** MACD crosses above signal line AND RSI is 30–55
+- **SELL:** MACD crosses below signal line AND RSI > 65, OR stop loss at -5%
+
+### Why These Symbols
+
+| Symbol | Why |
+|--------|-----|
+| **QQQ** | NASDAQ-100 ETF — diversified tech exposure, high liquidity, low bid/ask spread |
+| **NVDA** | Highest momentum in AI/chip sector, strong MACD trends |
+| **AAPL** | Most liquid single stock, reliable technical patterns |
+| **SPY** | S&P 500 ETF — broad market hedge, reduces concentration risk |
+
+These are the most traded instruments in the US market. ETFs (QQQ, SPY) reduce single-stock risk while still capturing trend moves. NVDA and AAPL add upside in strong markets.
+
+### Position Sizing
+
+- 20% of portfolio per symbol (max 4 positions open at once = 80% deployed)
+- Stop loss at -5% per position
+- Uses market orders for simplicity (fills guaranteed on liquid symbols)
+
+### Files
+```
+macd_rsi/
+├── run.js            # Entry point
+├── macdRsiEngine.js  # EMA/MACD/RSI calculations, signal logic, order placement
+├── alpaca.js         # Alpaca API wrapper (equities + bar data)
+└── config.js         # Credentials, symbols, indicator parameters
+```
+
+### Running Locally
+```bash
+cd macd_rsi
+npm install
+node run.js    # execute one cycle
+```
+
+### Schedule
+- **Local:** Windows Task Scheduler → `MACDRSIStrategy` — every 30 min, Mon–Fri 9:30am–4pm ET
+- **Cloud:** [Claude Code Routine](https://claude.ai/code/routines/trig_01EKr6LUMtqYFdFyDT33GyuU) — every hour, Mon–Fri
+
+---
+
 ## Other Strategies (Potential Future Additions)
 
 ### Options Income
@@ -197,13 +259,19 @@ node run.js    # execute one cycle
 ├── config.js            # Congressional strategy config + credentials
 ├── executed_trades.json # Auto-generated congressional trade log
 ├── package.json
-└── wheel/
-    ├── run.js           # Wheel strategy entry point
-    ├── wheelEngine.js   # Wheel strategy logic
-    ├── alpaca.js        # Alpaca API wrapper (options)
-    ├── config.js        # Wheel strategy config + credentials
-    ├── wheel_log.json   # Wheel state and cycle history
-    └── wheel.log        # Full timestamped execution log
+├── wheel/
+│   ├── run.js           # Wheel strategy entry point
+│   ├── wheelEngine.js   # Wheel strategy logic
+│   ├── alpaca.js        # Alpaca API wrapper (options)
+│   ├── config.js        # Wheel strategy config + credentials
+│   ├── wheel_log.json   # Wheel state and cycle history
+│   └── wheel.log        # Full timestamped execution log
+└── macd_rsi/
+    ├── run.js            # MACD/RSI strategy entry point
+    ├── macdRsiEngine.js  # EMA/MACD/RSI logic + order placement
+    ├── alpaca.js         # Alpaca API wrapper (equities + bars)
+    ├── config.js         # Test account credentials + strategy params
+    └── macd_rsi.log      # Auto-generated execution log
 ```
 
 ---

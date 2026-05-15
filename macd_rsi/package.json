@@ -1,0 +1,13 @@
+{
+  "name": "macd-rsi-strategy",
+  "version": "1.0.0",
+  "description": "MACD/RSI technical strategy on Alpaca paper account",
+  "main": "run.js",
+  "scripts": {
+    "start": "node run.js",
+    "once": "node run.js --once"
+  },
+  "dependencies": {
+    "axios": "^1.6.0"
+  }
+}
