@@ -6,7 +6,7 @@ const ALPACA = {
 
 const STRATEGY = {
   // Symbols to trade
-  symbols: ['QQQ', 'NVDA', 'AAPL', 'SPY'],
+  symbols: ['QQQ', 'NVDA', 'AAPL', 'SPY', 'META', 'NFLX', 'CRM', 'MSFT', 'JPM'],
 
   // MACD settings (standard)
   macdFast:   12,
